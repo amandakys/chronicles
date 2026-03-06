@@ -1,0 +1,197 @@
+.timeline-page {
+  min-height: 100vh;
+  padding: 40px 20px 100px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.timeline-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.timeline-header .back-link {
+  display: inline-block;
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  color: var(--muted);
+  margin-bottom: 20px;
+  transition: color 0.3s ease;
+}
+
+.timeline-header .back-link:hover {
+  color: var(--primary);
+}
+
+.timeline-title {
+  font-size: 3rem;
+  letter-spacing: 0.15em;
+  margin-bottom: 10px;
+}
+
+.timeline-subtitle {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  color: var(--muted);
+  font-size: 1.2rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.empty-state p {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 1.3rem;
+  color: var(--muted);
+  margin-bottom: 30px;
+}
+
+.year-section {
+  margin-bottom: 30px;
+}
+
+.memories-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: center;
+}
+
+/* Floating action button */
+.add-memory-fab {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(145deg, var(--accent), #6b1515);
+  border: 2px solid var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  z-index: 100;
+}
+
+.add-memory-fab span {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 2rem;
+  color: var(--primary);
+  line-height: 1;
+}
+
+.add-memory-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 25px rgba(201, 168, 76, 0.3);
+}
+
+.add-memory-fab:active {
+  transform: scale(1.05);
+}
+
+@media (max-width: 900px) {
+  .memories-grid {
+    gap: 25px;
+  }
+}
+
+/* Mobile Carousel */
+.mobile-carousel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0;
+}
+
+.carousel-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  touch-action: pan-y;
+  padding: 0 20px;
+}
+
+.carousel-nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 25px;
+}
+
+.nav-arrow {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-arrow:disabled {
+  opacity: 0.3;
+}
+
+.carousel-counter {
+  font-family: 'Cinzel Decorative', serif;
+  color: var(--primary);
+  font-size: 1rem;
+  min-width: 60px;
+  text-align: center;
+}
+
+.carousel-dots {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 280px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--muted);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dot::before {
+  display: none;
+}
+
+.dot.active {
+  background: var(--primary);
+  transform: scale(1.2);
+}
+
+.dot:hover {
+  background: var(--primary);
+}
+
+@media (max-width: 600px) {
+  .timeline-title {
+    font-size: 2rem;
+  }
+
+  .memories-grid {
+    gap: 20px;
+  }
+
+  .add-memory-fab {
+    bottom: 20px;
+    right: 20px;
+    width: 55px;
+    height: 55px;
+  }
+}
