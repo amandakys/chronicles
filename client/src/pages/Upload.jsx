@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { getDeviceId } from '../lib/deviceId'
 import ImageCapture from '../components/ImageCapture'
@@ -9,17 +9,22 @@ function Upload() {
   const [image, setImage] = useState(null)
   const [preview, setPreview] = useState(null)
   const [year, setYear] = useState(new Date().getFullYear())
+  const [month, setMonth] = useState('')
+  const [day, setDay] = useState('')
   const [caption, setCaption] = useState('')
   const [name, setName] = useState('')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState(null)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const handleImageSelect = (file, dateTaken) => {
     setImage(file)
     setPreview(URL.createObjectURL(file))
     if (dateTaken && !isNaN(dateTaken.getFullYear())) {
       setYear(dateTaken.getFullYear())
+      setMonth(dateTaken.getMonth() + 1)
+      setDay(dateTaken.getDate())
     }
   }
 
@@ -52,6 +57,8 @@ function Upload() {
         .from('memories')
         .insert({
           year: parseInt(year),
+          month: month ? parseInt(month) : null,
+          day: day ? parseInt(day) : null,
           caption: caption.trim() || null,
           name: name.trim() || null,
           image_url: publicUrl,
@@ -71,15 +78,12 @@ function Upload() {
 
   if (success) {
     return (
+      <>
+      <div className="border-bar border-top" />
+      <div className="border-bar border-bottom" />
       <div className="upload-page">
         <div className="upload-success animate-fade-in">
-          <div className="wax-seal">
-            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="50" cy="50" r="45" fill="var(--accent)"/>
-              <circle cx="50" cy="50" r="38" fill="none" stroke="#6b1515" strokeWidth="3"/>
-              <text x="50" y="58" textAnchor="middle" fill="var(--primary)" fontSize="24" fontFamily="Cinzel Decorative">S</text>
-            </svg>
-          </div>
+          <div className="wax-seal" />
           <h2>Your Memory Has Been Inscribed</h2>
           <p className="success-text">The archives have been updated.</p>
           <Link to="/timeline" className="view-timeline-btn">
@@ -87,16 +91,45 @@ function Upload() {
           </Link>
         </div>
       </div>
+      </>
     )
   }
 
   return (
+    <>
+    {menuOpen && (
+      <div className="fullscreen-menu">
+        <button className="fullscreen-menu-close" onClick={() => setMenuOpen(false)}>
+          &times;
+        </button>
+        <nav className="fullscreen-menu-nav">
+          <Link to="/timeline" className="fullscreen-menu-item" onClick={() => setMenuOpen(false)}>
+            View the Chronicles
+          </Link>
+          <div className="fullscreen-menu-separator">
+            <div className="menu-wreath" />
+          </div>
+          <Link to="/" className="fullscreen-menu-item" onClick={() => setMenuOpen(false)}>
+            Return to the Gates
+          </Link>
+        </nav>
+      </div>
+    )}
+    <div className="border-bar border-top" />
+    <div className="border-bar border-bottom" />
     <div className="upload-page">
       <div className="upload-container animate-fade-in">
         <Link to="/" className="back-link">Return to the Gates</Link>
+        <div className="burger-wrapper">
+          <button className="burger-btn" onClick={() => setMenuOpen(!menuOpen)}>
+            <span className="burger-line" />
+            <span className="burger-line" />
+            <span className="burger-line" />
+          </button>
+        </div>
 
         <h1 className="upload-title">Inscribe Your Memory</h1>
-        <p className="upload-subtitle">Preserve a moment for eternity</p>
+        <p className="upload-subtitle">Share a memory of you and César through the ages</p>
 
         <form onSubmit={handleSubmit} className="upload-form">
           <ImageCapture onImageSelect={handleImageSelect} preview={preview} />
@@ -113,6 +146,44 @@ function Upload() {
               max="9999"
               required
             />
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="month">Month (Optional)</label>
+              <select
+                id="month"
+                value={month}
+                onChange={(e) => setMonth(e.target.value)}
+              >
+                <option value="">—</option>
+                <option value="1">Januarius</option>
+                <option value="2">Februarius</option>
+                <option value="3">Martius</option>
+                <option value="4">Aprilis</option>
+                <option value="5">Maius</option>
+                <option value="6">Junius</option>
+                <option value="7">Julius</option>
+                <option value="8">Augustus</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="day">Day (Optional)</label>
+              <input
+                type="number"
+                id="day"
+                value={day}
+                onChange={(e) => setDay(e.target.value)}
+                placeholder="—"
+                min="1"
+                max="31"
+              />
+            </div>
           </div>
 
           <div className="form-group">
@@ -147,6 +218,7 @@ function Upload() {
         </form>
       </div>
     </div>
+    </>
   )
 }
 

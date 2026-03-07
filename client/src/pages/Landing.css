@@ -4,6 +4,35 @@
   align-items: center;
   justify-content: center;
   padding: 40px 20px;
+  position: relative;
+}
+
+.landing::before,
+.landing::after {
+  content: '';
+  position: fixed;
+  left: 0;
+  width: 100%;
+  height: 30px;
+  background-color: var(--primary);
+  -webkit-mask-image: url(/border.png);
+  -webkit-mask-size: auto 100%;
+  -webkit-mask-repeat: repeat-x;
+  mask-image: url(/border.png);
+  mask-size: auto 100%;
+  mask-repeat: repeat-x;
+  opacity: 0.4;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.landing::before {
+  top: 0;
+}
+
+.landing::after {
+  bottom: 0;
+  transform: scaleY(-1);
 }
 
 .landing-content {
@@ -15,7 +44,6 @@
   font-size: 3.5rem;
   letter-spacing: 0.1em;
   margin-bottom: 10px;
-  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
   animation: fadeInUp 1s ease;
 }
 
@@ -24,7 +52,7 @@
   font-style: italic;
   font-size: 1.5rem;
   color: var(--muted);
-  margin-bottom: 60px;
+  margin-bottom: 45px;
   letter-spacing: 0.2em;
   animation: fadeInUp 1s ease 0.2s backwards;
 }
@@ -47,93 +75,50 @@
 
 .arch {
   width: 250px;
-  height: 350px;
+  height: 378px;
   position: relative;
-  background: var(--surface);
-  border: 3px solid var(--muted);
+  overflow: hidden;
 }
 
-.arch-top {
+.arch-image {
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  height: 100px;
-  background: var(--surface);
-  border-bottom: 3px solid var(--muted);
+  width: 100%;
+  height: 100%;
+  background-color: var(--muted);
+  -webkit-mask-image: url(/gate.png), linear-gradient(to bottom, black 50%, transparent 85%);
+  -webkit-mask-size: contain, 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-composite: source-in;
+  mask-image: url(/gate.png), linear-gradient(to bottom, black 50%, transparent 85%);
+  mask-size: contain, 100% 100%;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-composite: intersect;
+  transition: background-color 0.3s ease;
 }
 
-.arch-top::before {
-  content: '';
-  position: absolute;
-  bottom: -60px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 140px;
-  height: 120px;
-  background: var(--bg);
-  border-radius: 70px 70px 0 0;
-  border: 3px solid var(--muted);
-  border-bottom: none;
-}
-
-.arch-pillar {
-  position: absolute;
-  bottom: 0;
-  width: 40px;
-  height: 180px;
-  background: linear-gradient(90deg, var(--surface) 0%, #3d2a12 50%, var(--surface) 100%);
-  border-top: 3px solid var(--muted);
-}
-
-.arch-pillar.left {
-  left: 15px;
-}
-
-.arch-pillar.right {
-  right: 15px;
-}
-
-.arch-pillar::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -5px;
-  right: -5px;
-  height: 15px;
-  background: var(--muted);
-}
-
-.arch-pillar::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: -5px;
-  right: -5px;
-  height: 15px;
-  background: var(--muted);
+.arch-card:hover .arch-image {
+  background-color: var(--primary);
 }
 
 .arch-inner {
   position: absolute;
-  top: 160px;
-  left: 55px;
-  right: 55px;
-  bottom: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.arch-text {
+  top: 0;
+  bottom: 0;
+  left: 25%;
+  right: 25%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
+  justify-content: center;
+  gap: 12px;
 }
 
 .arch-icon {
-  font-family: 'Cinzel Decorative', serif;
+  font-family: 'Uncial Antiqua', serif;
   font-size: 2.5rem;
   color: var(--primary);
   width: 50px;
@@ -149,7 +134,7 @@
 }
 
 .arch-label {
-  font-family: 'Cinzel Decorative', serif;
+  font-family: 'Uncial Antiqua', serif;
   font-size: 0.9rem;
   color: var(--primary);
   text-align: center;
@@ -157,13 +142,8 @@
   letter-spacing: 0.05em;
 }
 
-.arch-card:hover .arch {
-  border-color: var(--primary);
-  box-shadow: 0 0 30px rgba(201, 168, 76, 0.2);
-}
-
-.arch-card:hover .arch-top::before {
-  border-color: var(--primary);
+.arch-card:hover .arch-label {
+  color: var(--text);
 }
 
 .landing-footer {
@@ -186,6 +166,14 @@
 }
 
 @media (max-width: 700px) {
+  .landing::before,
+  .landing::after {
+    -webkit-mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-size: 100% 100%;
+    mask-repeat: no-repeat;
+  }
+
   .landing-title {
     font-size: 2.5rem;
     letter-spacing: 0.15em;
@@ -196,31 +184,11 @@
   }
 
   .arch-container {
-    flex-direction: column;
-    align-items: center;
-    gap: 30px;
+    gap: 20px;
   }
 
   .arch {
-    width: 220px;
-    height: 300px;
-  }
-
-  .arch-top::before {
-    width: 120px;
-    height: 100px;
-    bottom: -50px;
-    border-radius: 60px 60px 0 0;
-  }
-
-  .arch-pillar {
-    height: 150px;
-    width: 35px;
-  }
-
-  .arch-inner {
-    top: 140px;
-    left: 50px;
-    right: 50px;
+    width: 150px;
+    height: 227px;
   }
 }

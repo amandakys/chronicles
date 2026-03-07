@@ -40,7 +40,7 @@ body::before {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Cinzel Decorative', serif;
+  font-family: 'Uncial Antiqua', serif;
   font-weight: 700;
   color: var(--primary);
 }
@@ -56,7 +56,7 @@ a:hover {
 }
 
 button {
-  font-family: 'Cinzel Decorative', serif;
+  font-family: 'Uncial Antiqua', serif;
   background: linear-gradient(145deg, var(--surface), #1a1208);
   color: var(--primary);
   border: 2px solid var(--primary);
@@ -96,19 +96,16 @@ button:disabled {
 
 input, textarea {
   font-family: 'EB Garamond', Georgia, serif;
-  background: var(--surface);
-  border: 1px solid var(--muted);
+  background: transparent;
+  border: none;
   color: var(--text);
   padding: 12px 16px;
   font-size: 1.1rem;
   width: 100%;
-  transition: all 0.3s ease;
 }
 
 input:focus, textarea:focus {
   outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 10px rgba(201, 168, 76, 0.2);
 }
 
 input::placeholder, textarea::placeholder {
@@ -117,7 +114,7 @@ input::placeholder, textarea::placeholder {
 }
 
 label {
-  font-family: 'Cinzel Decorative', serif;
+  font-family: 'Uncial Antiqua', serif;
   color: var(--primary);
   font-size: 0.9rem;
   letter-spacing: 0.05em;
@@ -221,4 +218,126 @@ label {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
+}
+
+/* Shared fullscreen menu */
+.fullscreen-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.fullscreen-menu-close {
+  position: absolute;
+  top: 25px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--primary);
+  cursor: pointer;
+  padding: 8px;
+  line-height: 1;
+}
+
+.fullscreen-menu-close::before {
+  display: none;
+}
+
+.fullscreen-menu-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+.fullscreen-menu-item {
+  font-family: 'Uncial Antiqua', serif;
+  font-size: 1.4rem;
+  letter-spacing: 0.1em;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.3s ease;
+  text-decoration: none;
+}
+
+.fullscreen-menu-item::before {
+  display: none;
+}
+
+.fullscreen-menu-item.active {
+  color: var(--primary);
+}
+
+.fullscreen-menu-item:hover {
+  color: var(--primary);
+}
+
+.fullscreen-menu-heading {
+  font-family: 'Uncial Antiqua', serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.fullscreen-menu-separator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.menu-wreath {
+  width: 40px;
+  height: 40px;
+  background-color: var(--primary);
+  opacity: 0.3;
+  -webkit-mask-image: url(/laurel-wreath.png);
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-image: url(/laurel-wreath.png);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}
+
+/* Shared burger menu */
+.burger-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.burger-btn::before {
+  display: none;
+}
+
+.burger-line {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--primary);
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.burger-btn:hover .burger-line {
+  opacity: 1;
 }

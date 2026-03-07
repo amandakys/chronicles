@@ -2,39 +2,45 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
-  margin: 50px 0 40px;
-  padding: 20px 0;
+  gap: 15px;
+  margin: 40px 0 30px;
+  padding: 15px 0;
 }
 
 .year-numeral {
-  font-size: 3rem;
+  font-size: 2rem;
   letter-spacing: 0.15em;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .laurel-left,
 .laurel-right {
-  width: 60px;
-  height: 80px;
-  color: var(--primary);
+  width: 40px;
+  height: 40px;
+  background-color: var(--primary);
+  -webkit-mask-image: url(/laurel-wreath.png);
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-image: url(/laurel-wreath.png);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
   opacity: 0.8;
 }
 
-.laurel-left svg,
-.laurel-right svg {
-  width: 100%;
-  height: 100%;
+.laurel-right {
+  transform: scaleX(-1);
 }
 
 @media (max-width: 600px) {
   .year-numeral {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
 
   .laurel-left,
   .laurel-right {
-    width: 40px;
-    height: 55px;
+    width: 30px;
+    height: 30px;
   }
 }
