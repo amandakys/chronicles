@@ -222,6 +222,8 @@ function Timeline() {
 
   return (
     <>
+    <div className="timeline-border-bar timeline-border-top" />
+    <div className="timeline-border-bar timeline-border-bottom" />
     {menuOpen && (
       <div className="fullscreen-menu">
         <button className="fullscreen-menu-close" onClick={() => setMenuOpen(false)}>

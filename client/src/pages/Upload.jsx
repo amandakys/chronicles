@@ -1,38 +1,51 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { getDeviceId } from '../lib/deviceId'
 import ImageCapture from '../components/ImageCapture'
 import './Upload.css'
 
+const currentYear = new Date().getFullYear()
+
+function makeEntry(file, dateTaken) {
+  const hasDate = dateTaken && !isNaN(dateTaken.getFullYear())
+  return {
+    id: crypto.randomUUID(),
+    file,
+    preview: URL.createObjectURL(file),
+    year: hasDate ? dateTaken.getFullYear() : currentYear,
+    month: hasDate ? dateTaken.getMonth() + 1 : '',
+    day: hasDate ? dateTaken.getDate() : '',
+    caption: '',
+    name: '',
+  }
+}
+
 function Upload() {
-  const [image, setImage] = useState(null)
-  const [preview, setPreview] = useState(null)
-  const [year, setYear] = useState(new Date().getFullYear())
-  const [month, setMonth] = useState('')
-  const [day, setDay] = useState('')
-  const [caption, setCaption] = useState('')
-  const [name, setName] = useState('')
+  const [entries, setEntries] = useState([])
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState(null)
   const [menuOpen, setMenuOpen] = useState(false)
 
-  const handleImageSelect = (file, dateTaken) => {
-    setImage(file)
-    setPreview(URL.createObjectURL(file))
-    if (dateTaken && !isNaN(dateTaken.getFullYear())) {
-      setYear(dateTaken.getFullYear())
-      setMonth(dateTaken.getMonth() + 1)
-      setDay(dateTaken.getDate())
-    }
-  }
+  const handleImagesSelect = useCallback((results) => {
+    const newEntries = results.map(({ file, dateTaken }) => makeEntry(file, dateTaken))
+    setEntries((prev) => [...prev, ...newEntries])
+  }, [])
+
+  const updateEntry = useCallback((id, field, value) => {
+    setEntries((prev) => prev.map((e) => e.id === id ? { ...e, [field]: value } : e))
+  }, [])
+
+  const removeEntry = useCallback((id) => {
+    setEntries((prev) => prev.filter((e) => e.id !== id))
+  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (!image) {
-      setError('Please select an image for the archives.')
+    if (entries.length === 0) {
+      setError('Please select at least one image for the archives.')
       return
     }
 
@@ -40,37 +53,41 @@ function Upload() {
     setError(null)
 
     try {
-      const fileExt = image.name.split('.').pop()
-      const fileName = `${crypto.randomUUID()}.${fileExt}`
+      const deviceId = getDeviceId()
 
-      const { error: uploadError } = await supabase.storage
-        .from('memory-images')
-        .upload(fileName, image)
+      for (const entry of entries) {
+        const fileExt = entry.file.name.split('.').pop()
+        const fileName = `${crypto.randomUUID()}.${fileExt}`
 
-      if (uploadError) throw uploadError
+        const { error: uploadError } = await supabase.storage
+          .from('memory-images')
+          .upload(fileName, entry.file)
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('memory-images')
-        .getPublicUrl(fileName)
+        if (uploadError) throw uploadError
 
-      const { error: insertError } = await supabase
-        .from('memories')
-        .insert({
-          year: parseInt(year),
-          month: month ? parseInt(month) : null,
-          day: day ? parseInt(day) : null,
-          caption: caption.trim() || null,
-          name: name.trim() || null,
-          image_url: publicUrl,
-          device_id: getDeviceId(),
-        })
+        const { data: { publicUrl } } = supabase.storage
+          .from('memory-images')
+          .getPublicUrl(fileName)
 
-      if (insertError) throw insertError
+        const { error: insertError } = await supabase
+          .from('memories')
+          .insert({
+            year: parseInt(entry.year),
+            month: entry.month ? parseInt(entry.month) : null,
+            day: entry.day ? parseInt(entry.day) : null,
+            caption: entry.caption.trim() || null,
+            name: entry.name.trim() || null,
+            image_url: publicUrl,
+            device_id: deviceId,
+          })
+
+        if (insertError) throw insertError
+      }
 
       setSuccess(true)
     } catch (err) {
       console.error('Error:', err)
-      setError('The scroll could not be preserved. Please try again.')
+      setError('The scrolls could not be preserved. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -84,7 +101,7 @@ function Upload() {
       <div className="upload-page">
         <div className="upload-success animate-fade-in">
           <div className="wax-seal" />
-          <h2>Your Memory Has Been Inscribed</h2>
+          <h2>{entries.length === 1 ? 'Your Memory Has Been Inscribed' : 'Your Memories Have Been Inscribed'}</h2>
           <p className="success-text">The archives have been updated.</p>
           <Link to="/timeline" className="view-timeline-btn">
             <button>View the Chronicles</button>
@@ -132,89 +149,105 @@ function Upload() {
         <p className="upload-subtitle">Share a memory of you and César through the ages</p>
 
         <form onSubmit={handleSubmit} className="upload-form">
-          <ImageCapture onImageSelect={handleImageSelect} preview={preview} />
+          <ImageCapture onImagesSelect={handleImagesSelect} hasEntries={entries.length > 0} />
 
-          <div className="form-group">
-            <label htmlFor="year">Anno Domini (auto-detected from photo)</label>
-            <input
-              type="number"
-              id="year"
-              value={year}
-              onChange={(e) => setYear(e.target.value)}
-              placeholder={new Date().getFullYear().toString()}
-              min="1"
-              max="9999"
-              required
-            />
-          </div>
+          {entries.map((entry) => (
+            <div key={entry.id} className="entry-card">
+              <div className="entry-preview">
+                <img src={entry.preview} alt="Preview" />
+                <button
+                  type="button"
+                  className="entry-remove"
+                  onClick={() => removeEntry(entry.id)}
+                >
+                  &times;
+                </button>
+              </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="month">Month (Optional)</label>
-              <select
-                id="month"
-                value={month}
-                onChange={(e) => setMonth(e.target.value)}
-              >
-                <option value="">—</option>
-                <option value="1">Januarius</option>
-                <option value="2">Februarius</option>
-                <option value="3">Martius</option>
-                <option value="4">Aprilis</option>
-                <option value="5">Maius</option>
-                <option value="6">Junius</option>
-                <option value="7">Julius</option>
-                <option value="8">Augustus</option>
-                <option value="9">September</option>
-                <option value="10">October</option>
-                <option value="11">November</option>
-                <option value="12">December</option>
-              </select>
+              <div className="form-group">
+                <label>Anno Domini</label>
+                <input
+                  type="number"
+                  value={entry.year}
+                  onChange={(e) => updateEntry(entry.id, 'year', e.target.value)}
+                  placeholder={currentYear.toString()}
+                  min="1"
+                  max="9999"
+                  required
+                />
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Month (Optional)</label>
+                  <select
+                    value={entry.month}
+                    onChange={(e) => updateEntry(entry.id, 'month', e.target.value)}
+                  >
+                    <option value="">—</option>
+                    <option value="1">Januarius</option>
+                    <option value="2">Februarius</option>
+                    <option value="3">Martius</option>
+                    <option value="4">Aprilis</option>
+                    <option value="5">Maius</option>
+                    <option value="6">Junius</option>
+                    <option value="7">Julius</option>
+                    <option value="8">Augustus</option>
+                    <option value="9">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Day (Optional)</label>
+                  <input
+                    type="number"
+                    value={entry.day}
+                    onChange={(e) => updateEntry(entry.id, 'day', e.target.value)}
+                    placeholder="—"
+                    min="1"
+                    max="31"
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Your Words for the Ages</label>
+                <textarea
+                  value={entry.caption}
+                  onChange={(e) => updateEntry(entry.id, 'caption', e.target.value)}
+                  placeholder="Describe this moment..."
+                  maxLength={300}
+                  rows={3}
+                />
+                <span className="char-count">{entry.caption.length}/300</span>
+              </div>
+
+              <div className="form-group">
+                <label>Your Name (Optional)</label>
+                <input
+                  type="text"
+                  value={entry.name}
+                  onChange={(e) => updateEntry(entry.id, 'name', e.target.value)}
+                  placeholder="Anonymous scribe"
+                />
+              </div>
             </div>
-
-            <div className="form-group">
-              <label htmlFor="day">Day (Optional)</label>
-              <input
-                type="number"
-                id="day"
-                value={day}
-                onChange={(e) => setDay(e.target.value)}
-                placeholder="—"
-                min="1"
-                max="31"
-              />
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="caption">Your Words for the Ages</label>
-            <textarea
-              id="caption"
-              value={caption}
-              onChange={(e) => setCaption(e.target.value)}
-              placeholder="Describe this moment..."
-              maxLength={300}
-              rows={4}
-            />
-            <span className="char-count">{caption.length}/300</span>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="name">Your Name (Optional)</label>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Anonymous scribe"
-            />
-          </div>
+          ))}
 
           {error && <p className="error-text">{error}</p>}
 
-          <button type="submit" disabled={loading} className="submit-btn">
-            {loading ? 'Consulting the scribes...' : 'Inscribe to the Archives'}
-          </button>
+          {entries.length > 0 && (
+            <button type="submit" disabled={loading} className="submit-btn">
+              {loading
+                ? 'Consulting the scribes...'
+                : entries.length === 1
+                  ? 'Inscribe to the Archives'
+                  : `Inscribe ${entries.length} Memories to the Archives`}
+            </button>
+          )}
         </form>
       </div>
     </div>

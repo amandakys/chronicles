@@ -230,12 +230,26 @@
   justify-content: center;
   padding: 20px;
   box-sizing: border-box;
-  animation: fadeIn 0.25s ease;
+  animation: overlayIn 0.3s ease;
+}
+
+.fullscreen-overlay.dismissing {
+  animation: overlayOut 0.25s ease forwards;
 }
 
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes overlayOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
 .fullscreen-image {
@@ -284,6 +298,77 @@
 
 .fullscreen-card .card-caption {
   font-size: 1.4rem;
+}
+
+/* Fullscreen flip card (gallery tap interaction) */
+.fullscreen-flip-container {
+  perspective: 1000px;
+  width: 90vw;
+  max-width: 500px;
+  animation: cardEnlarge 0.3s ease;
+}
+
+.fullscreen-flip-container.dismissing {
+  animation: cardShrink 0.25s ease forwards;
+}
+
+@keyframes cardEnlarge {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes cardShrink {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+}
+
+.fullscreen-flip-front,
+.fullscreen-flip-back {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition: transform 0.6s ease;
+}
+
+.fullscreen-flip-front {
+  position: relative;
+  border: 3px solid var(--muted);
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.fullscreen-flip-front img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.fullscreen-flip-back {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  transform: rotateY(180deg) translateY(-50%);
+  -webkit-transform: rotateY(180deg) translateY(-50%);
+}
+
+.fullscreen-flip-container.flipped .fullscreen-flip-front {
+  transform: rotateY(180deg);
+}
+
+.fullscreen-flip-container.flipped .fullscreen-flip-back {
+  transform: rotateY(0deg) translateY(-50%);
 }
 
 /* Gallery mode - natural aspect ratio */

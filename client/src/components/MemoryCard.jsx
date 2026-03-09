@@ -17,7 +17,8 @@ function MemoryCard({ memory, delay = 0, canDelete = false, onDelete, gallery = 
   const [isFlipped, setIsFlipped] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [expanded, setExpanded] = useState(false)
-  const [fullscreenFlipped, setFullscreenFlipped] = useState(false)
+  const [galleryStage, setGalleryStage] = useState(null) // null | 'image' | 'message'
+  const [galleryDismissing, setGalleryDismissing] = useState(false)
   const pressTimer = useRef(null)
   const didLongPress = useRef(false)
 
@@ -59,12 +60,25 @@ function MemoryCard({ memory, delay = 0, canDelete = false, onDelete, gallery = 
         didLongPress.current = false
         return
       }
-      setFullscreenFlipped(false)
-      setFullscreenFlipped(false)
-      // Open fullscreen flipped view
-      setFullscreenFlipped(true)
+      if (window.innerWidth > 600) {
+        setIsFlipped(!isFlipped)
+      } else {
+        setGalleryStage('image')
+      }
     } else {
       setIsFlipped(!isFlipped)
+    }
+  }
+
+  const handleOverlayClick = () => {
+    if (galleryStage === 'image') {
+      setGalleryStage('message')
+    } else {
+      setGalleryDismissing(true)
+      setTimeout(() => {
+        setGalleryStage(null)
+        setGalleryDismissing(false)
+      }, 250)
     }
   }
 
@@ -134,30 +148,49 @@ function MemoryCard({ memory, delay = 0, canDelete = false, onDelete, gallery = 
         </div>
       )}
 
-      {/* Fullscreen flipped card (tap in gallery) */}
-      {fullscreenFlipped && (
-        <div className="fullscreen-overlay" onClick={() => setFullscreenFlipped(false)}>
-          <div className="fullscreen-card">
-            <div
-              className="card-back-bg"
-              style={{ backgroundImage: `url(${memory.image_url})` }}
-            />
-            <div className="card-back-inner">
-              <p className="card-caption">{memory.caption || 'A moment preserved in time.'}</p>
-              <div className="card-back-footer">
-                {memory.name && <span className="card-back-name">{memory.name}</span>}
-                <span className="card-back-year">{formatDate(memory)}{memory.year} A.D.</span>
-                {canDelete && (
-                  <button className="delete-btn" onClick={handleDelete}>
-                    {confirmDelete ? 'Confirm?' : 'Remove'}
-                  </button>
-                )}
+      {/* Fullscreen gallery card (tap to expand → tap to flip → tap to dismiss) */}
+      {galleryStage && (
+        <div className={`fullscreen-overlay ${galleryDismissing ? 'dismissing' : ''}`} onClick={handleOverlayClick}>
+          <div className={`fullscreen-flip-container ${galleryStage === 'message' ? 'flipped' : ''} ${galleryDismissing ? 'dismissing' : ''}`}>
+            <div className="fullscreen-flip-front">
+              <img
+                src={memory.image_url}
+                alt={memory.caption || 'Memory'}
+                className="fullscreen-image"
+              />
+              <div className="card-overlay">
+                <span className="card-year">{formatDate(memory)}{memory.year}</span>
+                {memory.name && <span className="card-name">{memory.name}</span>}
+              </div>
+              <div className="card-corner top-left"></div>
+              <div className="card-corner top-right"></div>
+              <div className="card-corner bottom-left"></div>
+              <div className="card-corner bottom-right"></div>
+            </div>
+            <div className="fullscreen-flip-back">
+              <div className="fullscreen-card">
+                <div
+                  className="card-back-bg"
+                  style={{ backgroundImage: `url(${memory.image_url})` }}
+                />
+                <div className="card-back-inner">
+                  <p className="card-caption">{memory.caption || 'A moment preserved in time.'}</p>
+                  <div className="card-back-footer">
+                    {memory.name && <span className="card-back-name">{memory.name}</span>}
+                    <span className="card-back-year">{formatDate(memory)}{memory.year} A.D.</span>
+                    {canDelete && (
+                      <button className="delete-btn" onClick={handleDelete}>
+                        {confirmDelete ? 'Confirm?' : 'Remove'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <div className="card-corner top-left"></div>
+                <div className="card-corner top-right"></div>
+                <div className="card-corner bottom-left"></div>
+                <div className="card-corner bottom-right"></div>
               </div>
             </div>
-            <div className="card-corner top-left"></div>
-            <div className="card-corner top-right"></div>
-            <div className="card-corner bottom-left"></div>
-            <div className="card-corner bottom-right"></div>
           </div>
         </div>
       )}

@@ -2,42 +2,45 @@ import { useRef } from 'react'
 import exifr from 'exifr'
 import './ImageCapture.css'
 
-function ImageCapture({ onImageSelect, preview }) {
+async function extractDate(file) {
+  try {
+    const exif = await exifr.parse(file, ['DateTimeOriginal', 'CreateDate', 'ModifyDate'])
+    const dateField = exif?.DateTimeOriginal || exif?.CreateDate || exif?.ModifyDate
+    if (dateField) return new Date(dateField)
+  } catch (err) {
+    console.log('Could not read EXIF data:', err)
+  }
+  return null
+}
+
+function ImageCapture({ onImagesSelect, hasEntries }) {
   const fileInputRef = useRef(null)
   const cameraInputRef = useRef(null)
 
   const handleFileChange = async (e) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      let dateTaken = null
-      try {
-        const exif = await exifr.parse(file, ['DateTimeOriginal', 'CreateDate', 'ModifyDate'])
-        const dateField = exif?.DateTimeOriginal || exif?.CreateDate || exif?.ModifyDate
-        if (dateField) {
-          dateTaken = new Date(dateField)
-        }
-      } catch (err) {
-        console.log('Could not read EXIF data:', err)
-      }
-      onImageSelect(file, dateTaken)
-    }
+    const files = Array.from(e.target.files || [])
+    if (files.length === 0) return
+
+    const results = await Promise.all(
+      files.map(async (file) => ({
+        file,
+        dateTaken: await extractDate(file),
+      }))
+    )
+    onImagesSelect(results)
+    e.target.value = ''
   }
 
   return (
     <div className="image-capture">
-      <label>Image for the Archives</label>
-
-      {preview && (
-        <div className="image-preview">
-          <img src={preview} alt="Preview" />
-        </div>
-      )}
+      <label>{hasEntries ? 'Add More Images' : 'Images for the Archives'}</label>
 
       <div className="capture-buttons">
         <input
           ref={fileInputRef}
           type="file"
           accept="image/*"
+          multiple
           onChange={handleFileChange}
           style={{ display: 'none' }}
         />
