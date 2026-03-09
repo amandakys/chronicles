@@ -2,12 +2,12 @@
   perspective: 1000px;
   cursor: pointer;
   opacity: 0;
-  height: 350px;
+  height: 45vh;
 }
 
 .memory-card {
   position: relative;
-  height: 350px;
+  height: 45vh;
   transition: transform 0.6s ease;
   transform-style: preserve-3d;
   -webkit-transform-style: preserve-3d;

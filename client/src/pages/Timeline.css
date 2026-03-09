@@ -269,7 +269,7 @@
 
 .memories-row-spacer {
   flex-shrink: 0;
-  width: calc(50vw - 130px);
+  width: calc(50vw - 200px);
 }
 
 .memory-row-item {
