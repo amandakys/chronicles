@@ -222,8 +222,6 @@ function Timeline() {
 
   return (
     <>
-    <div className="timeline-border-bar timeline-border-top" />
-    <div className="timeline-border-bar timeline-border-bottom" />
     {menuOpen && (
       <div className="fullscreen-menu">
         <button className="fullscreen-menu-close" onClick={() => setMenuOpen(false)}>
@@ -256,6 +254,7 @@ function Timeline() {
       </div>
     )}
     <div className="timeline-page">
+      <div className="timeline-flow-border timeline-flow-border-top" />
       <div className="timeline-header animate-fade-in">
         <Link to="/" className="back-link">Return to the Gates</Link>
         <h1 className="timeline-title">The Chronicles</h1>
@@ -409,6 +408,7 @@ function Timeline() {
       <Link to="/upload" className="add-memory-fab" title="Add a memory">
         <span>+</span>
       </Link>
+      <div className="timeline-flow-border timeline-flow-border-bottom" />
     </div>
     </>
   )

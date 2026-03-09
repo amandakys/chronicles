@@ -96,9 +96,8 @@ function Upload() {
   if (success) {
     return (
       <>
-      <div className="border-bar border-top" />
-      <div className="border-bar border-bottom" />
       <div className="upload-page">
+        <div className="upload-border upload-border-top" />
         <div className="upload-success animate-fade-in">
           <div className="wax-seal" />
           <h2>{entries.length === 1 ? 'Your Memory Has Been Inscribed' : 'Your Memories Have Been Inscribed'}</h2>
@@ -107,6 +106,7 @@ function Upload() {
             <button>View the Chronicles</button>
           </Link>
         </div>
+        <div className="upload-border upload-border-bottom" />
       </div>
       </>
     )
@@ -132,9 +132,8 @@ function Upload() {
         </nav>
       </div>
     )}
-    <div className="border-bar border-top" />
-    <div className="border-bar border-bottom" />
     <div className="upload-page">
+      <div className="upload-border upload-border-top" />
       <div className="upload-container animate-fade-in">
         <Link to="/" className="back-link">Return to the Gates</Link>
         <div className="burger-wrapper">
@@ -250,6 +249,7 @@ function Upload() {
           )}
         </form>
       </div>
+      <div className="upload-border upload-border-bottom" />
     </div>
     </>
   )
