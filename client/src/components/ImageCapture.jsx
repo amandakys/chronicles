@@ -33,7 +33,7 @@ function ImageCapture({ onImagesSelect, hasEntries }) {
 
   return (
     <div className="image-capture">
-      <label>{hasEntries ? 'Add More Images' : 'Images for the Archives'}</label>
+      <label>{hasEntries ? 'Add image(s)' : 'Images for the Archives'}</label>
 
       <div className="capture-buttons">
         <input

@@ -33,24 +33,22 @@
 
 .timeline-border-top {
   top: 0;
-  height: calc(40px + env(safe-area-inset-top));
-  padding-top: env(safe-area-inset-top);
-  background: linear-gradient(to bottom, var(--bg) 60%, transparent);
+  height: calc(30px + env(safe-area-inset-top));
+  background: var(--bg);
 }
 
 .timeline-border-top::after {
-  top: env(safe-area-inset-top);
+  bottom: 0;
 }
 
 .timeline-border-bottom {
   bottom: 0;
-  height: calc(40px + env(safe-area-inset-bottom));
-  padding-bottom: env(safe-area-inset-bottom);
-  background: linear-gradient(to top, var(--bg) 60%, transparent);
+  height: calc(30px + env(safe-area-inset-bottom));
+  background: var(--bg);
 }
 
 .timeline-border-bottom::after {
-  bottom: env(safe-area-inset-bottom);
+  top: 0;
   transform: scaleY(-1);
 }
 
@@ -355,9 +353,14 @@
 
 @media (max-width: 600px) {
   .timeline-page:has(.swipe-deck) {
-    height: 100vh;
+    height: 100dvh;
     min-height: 0;
     overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    overscroll-behavior: none;
   }
 
   .view-tabs-wrapper {

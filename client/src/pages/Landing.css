@@ -167,9 +167,14 @@
 
 @media (max-width: 700px) {
   .landing {
-    height: 100vh;
+    height: 100dvh;
     min-height: 0;
     overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    overscroll-behavior: none;
   }
 
   .landing::before,
