@@ -18,6 +18,7 @@ function makeEntry(file, dateTaken) {
     day: hasDate ? dateTaken.getDate() : '',
     caption: '',
     name: '',
+    nameEdited: false,
   }
 }
 
@@ -34,7 +35,11 @@ function Upload() {
   }, [])
 
   const updateEntry = useCallback((id, field, value) => {
-    setEntries((prev) => prev.map((e) => e.id === id ? { ...e, [field]: value } : e))
+    setEntries((prev) => prev.map((e) => {
+      if (e.id === id) return { ...e, [field]: value, ...(field === 'name' ? { nameEdited: true } : {}) }
+      if (field === 'name' && !e.nameEdited) return { ...e, name: value }
+      return e
+    }))
   }, [])
 
   const removeEntry = useCallback((id) => {
