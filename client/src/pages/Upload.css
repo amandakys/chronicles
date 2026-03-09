@@ -39,7 +39,7 @@
 .upload-container::before {
   content: '';
   position: absolute;
-  top: -40px;
+  top: 0px;
   left: -25%;
   width: 150%;
   height: calc(100% + 240px);
